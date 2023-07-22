@@ -1,6 +1,6 @@
 # NodeBB who read it
 
-This plugin adds the users currently browsing a topic into the api return
+This plugins show "who read current topic and when"
 
 ## Installation
 
