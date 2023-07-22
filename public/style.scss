@@ -1,0 +1,11 @@
+.page-topic {
+	[component="topic/who-read-it"] {
+		text-transform: initial;
+		color: #6c757d !important;
+		font-size: 12px;
+	}
+	[component="topic/who-read-it"] [data-uid] a {
+		position: relative;
+		display: block;
+	}
+}

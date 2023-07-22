@@ -1,0 +1,18 @@
+{
+	"library": "./index.js",
+	"hooks": [
+		{ "hook": "static:app.load", "method": "init" },
+		{ "hook": "filter:admin.header.build", "method": "addAdminNavigation"},
+		{ "hook": "filter:topic.build", "method": "filterTopicBuild" }
+	],
+	"templates": "templates",
+	"scripts": [
+		"./public/client.js"
+	],
+	"modules": {
+		"../admin/plugins/who-read-it.js": "./public/admin/who-read-it.js"
+	},
+	"scss": [
+		"public/style.scss"
+	]
+}
