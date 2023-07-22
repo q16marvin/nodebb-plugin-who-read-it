@@ -5,7 +5,7 @@
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/q16marvin/nodebb-who-read-it"
+    "url": "https://github.com/q16marvin/nodebb-plugin-who-read-it"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
