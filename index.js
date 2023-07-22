@@ -91,8 +91,6 @@ function isUserInCache(whoreadit, uid) {
 	
 async function getUsersReadTopic(uid, tid) {
 	const whoreadit = cache.peek('whoreadit:tid:' + tid) || [];
-	//console.log('whoreadit',whoreadit);
-	
 
 	if (whoreadit.length && isUserInCache(whoreadit, uid)) {
 		whoreadit.forEach(function (user) {
@@ -108,78 +106,15 @@ async function getUsersReadTopic(uid, tid) {
 		const uids = {};
 		
 		const dbUsers = await db.getSortedSetRevRange('users:joindate', 0, 100000000);
-		//console.log('dbUsers',dbUsers);
 		for(const user of dbUsers){
-			//console.log('user',user);
 			const dbtidsread = await db.getSortedSetRevRangeWithScores('uid:'+user + ':tids_read', 0, 100000000);
-			
 			dbtidsread.forEach(function (t_id) {
 				if(tid==t_id.value) {
-					//console.log('t_id',user,t_id);
-					uids[user] = t_id.score;
-					
+					uids[user] = t_id.score;					
 				}
 			})
 		}
 		
-		
-		
-		/*dbUsers.forEach(function (user) {
-			const dbtidsread = await db.getSortedSetRevRangeWithScores('uid:'+user + ':tids_read', 0, 100000000);
-			//console.log('dbtidsread',dbtidsread);
-			dbtidsread.forEach(function (t_id) {
-				if(tid==t_id.value) {
-					uids[user] = t_id.score;
-				}
-			})
-		})*/
-		
-		
-		
-		
-		
-		/*db.getSortedSetRevRange('users:joindate', 0, 100000000, function (err, users) {
-			
-			if (err) return console.log(err)
-				users.forEach(function (user) {
-					
-					// Do a thing here.
-				  //console.log(user)
-				 // db.getSortedSetRevRange('uid:'+user + ':tids_read', 0, 100000000, function (err,tids) {
-					  //console.log('tids:',tids)
-				  //}) 
-				  db.getSortedSetRevRangeWithScores('uid:'+user + ':tids_read', 0, 100000000, function (err,tids) {
-					
-					 // console.log(JSON.parse(tids[0]))
-					tids.forEach(function (t_id) {
-						
-						if(tid==t_id.value) {
-							//console.log(tid,t_id.value,t_id.score,tid==t_id.value,user)
-							//uids[user] = t_id.score;
-							console.log(user,tid,t_id.value,t_id.score,tid==t_id.value)
-							//uids[user] = true;
-							//uids[1] = true;
-							//console.log('uids_in',uids);
-							
-						}
-					})
-				  })
-				})
-			
-		})*/
-		
-		
-		
-		/*roomData.forEach(function (clientRooms) {
-			if (clientRooms && clientRooms.forEach) {
-				clientRooms.forEach(function (roomName) {
-					if (roomName.startsWith('uid_')) {
-						uids[roomName.split('_')[1]] = true;
-					}
-				});
-			}
-		});
-		*/
 		if (uid) {
 			uids[uid] = new Date().getTime();
 		}
@@ -187,27 +122,15 @@ async function getUsersReadTopic(uid, tid) {
 		settings.numUsers = Math.min(100, settings.numUsers || 10);
 
 		let userIds = Object.keys(uids).map(x => parseInt(x, 10));
-		//console.log('userIds',userIds,'uids',uids);
-
-		// bump composing users to the front of the queue
-		//const intersection = userIds.filter(x => composingUsers.includes(x));
-		//const remainder = userIds.filter(x => !composingUsers.includes(x));
-		//userIds = intersection.concat(remainder).slice(0, 100);
-
 		let userData = await user.getUsersFields(userIds, ['uid', 'username', 'userslug', 'picture', 'status']);
-		//userData = userData.filter(user => user && parseInt(user.uid, 10) > 0 && user.status !== 'offline').slice(0, settings.numUsers);
-		//userData = await user.blocks.filter(uid, userData);
-
+		
 		userData.forEach(function (user) {
-			//user.composing = composingUsers.includes(user.uid);
-			//user.readtimestamp = new Date(uids[user.uid]).toLocaleString('de-DE');
 			user.readtimestamp = moment(uids[user.uid]).format('DD.MM.YYYY HH:mm:ss');
 		});
 		
 		userData.sort((a, b) => (a.username > b.username) ? 1 : -1);
 		
 		cache.set('whoreadit:tid:' + tid, userData);
-		//console.log('whoreadit:tid:' + tid, userData);
 		return userData;
 	} catch (err) {
 		if (err.message === 'timeout reached while waiting for clients response') {
